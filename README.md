@@ -46,6 +46,8 @@ Check out our documentation for how to install and run Wizarr:
 
 📚 https://docs.wizarr.dev/getting-started/installation
 
+> Prefer not to self-host? A managed Wizarr instance is available via [ElfHosted](https://store.elfhosted.com/product-category/personal-stacks/?utm_source=github&utm_medium=readme&utm_campaign=wizarr-readme), bundled alongside Plex, Jellyfin, or Emby in their personal-stacks (7-day trial).
+
 ## 🔧 API Documentation
 
 Wizarr provides a comprehensive REST API for automation and integration with **automatic OpenAPI/Swagger documentation**:
@@ -58,7 +60,7 @@ Wizarr provides a comprehensive REST API for automation and integration with **a
 ## Sponsorship
 Thank you to our sponsor for supporting Wizarr development!
 
-<a href="https://elfhosted.com">
+<a href="https://elfhosted.com/?utm_source=github&utm_medium=readme&utm_campaign=wizarr-readme">
   <img src="https://store.elfhosted.com/wp-content/uploads/2024/11/logo.svg" height="50" alt="Elfhosted" />
 </a>
 <a href="https://www.kwickflix.tv">
