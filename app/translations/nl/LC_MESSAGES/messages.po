@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2026-07-05 06:49+0000\n"
 "PO-Revision-Date: 2026-07-06 07:54+0000\n"
-"Last-Translator: LvanAlphen <iggnition@users.noreply.hosted.weblate.org>\n"
+"Last-Translator: Thaan <thaan@thaan.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/wizarr/wizarr-"
 "universal/nl/>\n"
 "Language: nl\n"
@@ -64,9 +64,8 @@ msgstr "{} verlopen sessies beëindigd"
 msgid "Unknown action"
 msgstr "Onbekende handeling"
 
-#, fuzzy
 msgid "Failed to update settings"
-msgstr "Mislukt om statistieken te laden"
+msgstr "Instellingen wijzigen niet gelukt"
 
 #, python-brace-format
 msgid "Activity data has been successfully deleted ({} records)."
