@@ -792,9 +792,10 @@ def invite_scan_libraries():
             incoming_ids.add(fid)
             if fid in existing_libs:
                 # Update existing row (preserve primary key so invites keep referencing it)
+                # `enabled` is the admin's saved default for new invites and is what
+                # the checkbox partial renders from, so it must survive a rescan.
                 lib = existing_libs[fid]
                 lib.name = name
-                lib.enabled = True
             else:
                 # New library - insert
                 lib = Library(

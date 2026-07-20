@@ -181,9 +181,10 @@ def scan_server_libraries(server_id):
         incoming_ids.add(fid_key)
         if fid_key in existing_libs:
             # Update existing row (preserve primary key so invites keep referencing it)
+            # `enabled` is the admin's saved selection; this scan runs when the edit
+            # form OPENS, so resetting it here wiped the checkboxes being rendered.
             lib = existing_libs[fid_key]
             lib.name = name
-            lib.enabled = True
         else:
             # New library - insert
             lib = Library(
