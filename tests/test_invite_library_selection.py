@@ -73,6 +73,65 @@ def test_picker_with_a_selection_is_created(client, session):
     assert [library.id for library in inv.libraries] == [lib.id]
 
 
+def test_picker_used_with_only_a_stale_library_id_is_rejected(client, session):
+    """A submitted ID that resolves to zero eligible libraries (stale/deleted, or
+    never existed) must be rejected the same as an empty selection - otherwise
+    the invite commits with no library associations and redemption falls back
+    to every enabled library, defeating the picker's restriction.
+    """
+    _login(client, session)
+    server = _server(session)
+
+    resp = client.post(
+        "/invite",
+        data={
+            "server_ids": str(server.id),
+            "expires": "never",
+            "library_picker_used": "1",
+            "libraries": "999999",
+        },
+        headers=HX,
+    )
+    assert resp.status_code == 400
+    assert b"at least one library" in resp.data
+    assert Invitation.query.count() == 0
+
+
+def test_picker_used_with_a_library_from_an_unselected_server_is_rejected(
+    client, session
+):
+    """A submitted ID belonging to a server that isn't part of this invite must
+    not silently resolve to zero libraries and slip through as an unscoped
+    invite.
+    """
+    _login(client, session)
+    server = _server(session)
+    other_server = MediaServer(
+        name="Other Plex", server_type="plex", url="http://other.local", api_key="tok"
+    )
+    session.add(other_server)
+    session.commit()
+    foreign_lib = Library(
+        external_id="1", name="Movies", server_id=other_server.id, enabled=True
+    )
+    session.add(foreign_lib)
+    session.commit()
+
+    resp = client.post(
+        "/invite",
+        data={
+            "server_ids": str(server.id),
+            "expires": "never",
+            "library_picker_used": "1",
+            "libraries": str(foreign_lib.id),
+        },
+        headers=HX,
+    )
+    assert resp.status_code == 400
+    assert b"at least one library" in resp.data
+    assert Invitation.query.count() == 0
+
+
 def test_untouched_picker_is_allowed(client, session):
     """No marker (picker never opened) -> allowed; redeem-time fallback still applies."""
     _login(client, session)

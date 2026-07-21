@@ -107,10 +107,24 @@ def create_invite(form: Any) -> Invitation:
     # it and point them at the permissive default. When the picker was never opened
     # there is no marker and the redeem-time fallback still grants all enabled
     # libraries, so unattended invites are unaffected.
+    #
+    # The submitted IDs are validated by resolving them against Library rows that
+    # actually belong to one of the selected servers, not by their raw presence:
+    # a stale or nonexistent ID would otherwise pass this check while resolving
+    # to zero libraries below, committing an unscoped invite that the picker
+    # appeared to have restricted.
     selected_library_ids = [
         int(lid) for lid in _get_form_list(form, "libraries") if str(lid).isdigit()
     ]
-    if form.get("library_picker_used") and not selected_library_ids:
+    resolved_libraries = (
+        Library.query.filter(
+            Library.id.in_(selected_library_ids),
+            Library.server_id.in_([s.id for s in servers]),
+        ).all()
+        if selected_library_ids
+        else []
+    )
+    if form.get("library_picker_used") and not resolved_libraries:
         raise ValueError(
             "Select at least one library, or leave the library selector "
             "untouched to grant access to all enabled libraries."
@@ -166,8 +180,8 @@ def create_invite(form: Any) -> Invitation:
 
         invite.servers.extend(servers)
 
-    # Wire up library associations (selected_library_ids computed and validated above)
-    if selected_library_ids:
+    # Wire up library associations (resolved_libraries computed and validated above)
+    if resolved_libraries:
         # Clear any existing library associations for this invite to avoid UNIQUE constraint violations
         # This handles cases where there might be leftover data from previous attempts
         from app.models import invite_libraries
@@ -177,18 +191,11 @@ def create_invite(form: Any) -> Invitation:
         )
         db.session.flush()  # Ensure the delete is committed before adding new records
 
-        # Look up the Library objects by their IDs
-        # Also ensure they belong to one of the selected servers
-        server_ids = [s.id for s in servers]
-        libs = Library.query.filter(
-            Library.id.in_(selected_library_ids), Library.server_id.in_(server_ids)
-        ).all()
-
         # Since we're now using unique library IDs from the frontend,
         # we shouldn't have duplicates, but we'll keep the deduplication
         # logic as a safety measure
         seen_lib_ids = set()
-        for lib in libs:
+        for lib in resolved_libraries:
             if lib.id not in seen_lib_ids:
                 seen_lib_ids.add(lib.id)
                 invite.libraries.append(lib)
