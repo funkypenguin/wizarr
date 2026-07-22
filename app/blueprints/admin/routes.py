@@ -231,7 +231,7 @@ def invite_table():
 
     Accepts:
       - server filter via POST form data (preferred) or querystring (?server=ID)
-      - delete action via querystring (?delete=CODE)
+      - delete action via querystring (?delete_id=ID)
 
     Returns the 'tables/invite_card.html' partial.
     """
@@ -240,13 +240,30 @@ def invite_table():
     # ------------------------------------------------------------------
     server_filter = request.form.get("server") or request.args.get("server")
 
-    if code := request.args.get("delete"):
-        # Find the invitation to delete
-        invitation = Invitation.query.filter_by(code=code).first()
-        if invitation:
-            # Delete the invitation - CASCADE will handle association table cleanup
-            db.session.delete(invitation)
-            db.session.commit()
+    if raw_delete_id := request.args.get("delete_id"):
+        # Delete by primary key. Deleting by code broke when a code contained a
+        # trailing space: the browser strips it from the query string, so the
+        # exact-match lookup never matched and the invitation became undeletable.
+        #
+        # Use an explicit ?delete_id= parameter rather than reusing the old
+        # ?delete= (which carried an invite *code*): a stale numeric code from a
+        # cached page could otherwise be read as an unrelated invitation *id* and
+        # delete the wrong row. Old cached ?delete= requests now simply no-op.
+        #
+        # Parse defensively — str.isdigit() accepts values int() rejects (e.g.
+        # "²") and over-long digit strings hit Python's int-conversion limit,
+        # so an unguarded int() would raise and 500. Treat anything unparseable as
+        # a no-op.
+        try:
+            delete_pk = int(raw_delete_id)
+        except (TypeError, ValueError):
+            delete_pk = None
+        if delete_pk is not None:
+            invitation = db.session.get(Invitation, delete_pk)
+            if invitation:
+                # CASCADE handles association-table cleanup
+                db.session.delete(invitation)
+                db.session.commit()
 
     # ------------------------------------------------------------------
     # 2. Base query (libraries + servers)
