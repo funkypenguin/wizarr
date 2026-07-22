@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-21 06:05+0000\n"
+"POT-Creation-Date: 2026-07-22 06:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -295,7 +295,7 @@ msgstr ""
 msgid "Invalid form data: %(errors)s"
 msgstr ""
 
-#: app/blueprints/public/routes.py:181 app/blueprints/public/routes.py:198
+#: app/blueprints/public/routes.py:180 app/blueprints/public/routes.py:197
 msgid ""
 "There was an issue setting up your access. Please contact your server "
 "admin."
@@ -1125,13 +1125,25 @@ msgstr ""
 msgid "Enter your code"
 msgstr ""
 
-#: app/templates/user-plex-login.html:108
+#: app/templates/user-plex-login.html:111
 msgid "Join Server"
 msgstr ""
 
-#: app/templates/user-plex-login.html:115
+#: app/templates/user-plex-login.html:118
 #: app/templates/welcome-jellyfin.html:213
 msgid "Secure invitation system powered by Wizarr"
+msgstr ""
+
+#: app/templates/user-plex-login.html:400
+msgid "Pop-up blocked. Allow pop-ups for this site and try again."
+msgstr ""
+
+#: app/templates/user-plex-login.html:401
+msgid "Sign-in cancelled. Hit Join Server to try again."
+msgstr ""
+
+#: app/templates/user-plex-login.html:402
+msgid "Plex sign-in failed. Try again, or contact your server admin."
 msgstr ""
 
 #: app/templates/users.html:3
